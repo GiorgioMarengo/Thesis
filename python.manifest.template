@@ -1,0 +1,70 @@
+
+libos.entrypoint = "{{ entrypoint }}"
+loader.log_level = "{{ log_level }}"
+loader.insecure__use_cmdline_argv = true
+
+# =============================================================================
+# ENVIRONMENT VARIABLES
+# =============================================================================
+loader.env.LD_LIBRARY_PATH = "/lib:{{ arch_libdir }}:/usr/lib:/usr/{{ arch_libdir }}:/usr/local/lib"
+loader.env.PATH = "/bin:/usr/bin"
+# PYTHONPATH universale (Ubuntu 22.04/24.04)
+loader.env.PYTHONPATH = "/usr/lib/python3.10:/usr/lib/python3.12:/usr/lib/python3/dist-packages:/usr/local/lib/python3.10/dist-packages:/usr/local/lib/python3.12/dist-packages"
+loader.env.HOME = "/"
+
+# =============================================================================
+# FILESYSTEM MOUNTS
+# =============================================================================
+fs.mounts = [
+  { path = "/lib", uri = "file:{{ gramine.runtimedir() }}" },
+  { path = "{{ arch_libdir }}", uri = "file:{{ arch_libdir }}" },
+  { path = "/usr", uri = "file:/usr" },
+  { path = "/etc", uri = "file:/etc" },
+  
+  # Monta la cartella corrente in /app
+  { path = "/app", uri = "file:." },
+  
+  # Tmp criptato
+  { path = "/tmp", uri = "file:/tmp", type = "encrypted" },
+]
+
+# =============================================================================
+# HARDWARE RESOURCES
+# =============================================================================
+sgx.debug = true
+sgx.enclave_size = "32G"
+sgx.max_threads = 64
+
+# =============================================================================
+# TRUSTED FILES (Immutabili, verificati alla firma)
+# =============================================================================
+sgx.trusted_files = [
+  "file:{{ gramine.libos }}",
+  "file:{{ gramine.runtimedir() }}/",
+  "file:{{ arch_libdir }}/",
+  "file:/usr/{{ arch_libdir }}/",
+  "file:/usr/lib/",
+  "file:/usr/local/lib/",
+  
+  "file:Thesis_algorithm.py",
+  "file:requirements.txt",
+]
+
+# =============================================================================
+# ALLOWED FILES (Modificabili a runtime)
+# =============================================================================
+sgx.allowed_files = [
+  # File di sistema e rete
+  "file:/etc/nsswitch.conf",
+  "file:/etc/ethers",
+  "file:/etc/hosts",
+  "file:/etc/group",
+  "file:/etc/passwd",
+  "file:/etc/resolv.conf",
+  "file:/etc/gai.conf",
+  "file:/etc/ssl/certs/ca-certificates.crt",
+  "file:input.env",
+  
+  # Cartella di output
+  "file:output/",
+]
