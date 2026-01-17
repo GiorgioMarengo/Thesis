@@ -1,1 +1,47 @@
+libos.entrypoint = "{{ entrypoint }}"
+loader.log_level = "{{ log_level }}"
+loader.insecure__use_cmdline_argv = true
 
+loader.env.LD_LIBRARY_PATH = "/lib:{{ arch_libdir }}:/usr/lib:/usr/{{ arch_libdir }}"
+loader.env.PATH = "/usr/bin:/bin"
+loader.env.PYTHONPATH = "venv/lib/python3.12/site-packages"
+
+fs.mounts = [
+  { path = "/lib", uri = "file:{{ gramine.runtimedir() }}" },
+  { path = "{{ arch_libdir }}", uri = "file:{{ arch_libdir }}" },
+  { path = "/usr", uri = "file:/usr" },
+  { path = "/etc", uri = "file:/etc" },
+  { path = "/tmp", uri = "file:/tmp" },
+  { path = "/app", uri = "file:." },
+]
+
+sgx.enclave_size = "16G"
+sgx.max_threads = 64
+
+# Abilitiamo la risoluzione DNS
+sys.enable_extra_runtime_domain_names_conf = true
+
+sgx.trusted_files = [
+  "file:{{ gramine.libos }}",
+  "file:{{ gramine.runtimedir() }}/",
+  "file:{{ arch_libdir }}/",
+  "file:/usr/{{ arch_libdir }}/",
+  "file:/usr/lib/",
+  "file:/usr/local/lib/",
+  "file:Thesis_algorithm.py",
+  "file:{{ entrypoint }}",
+]
+
+sgx.allowed_files = [
+  "file:venv/",
+  "file:requirements.txt",
+  "file:input.env",
+  "file:/etc/nsswitch.conf",
+  "file:/etc/ethers",
+  "file:/etc/hosts",
+  "file:/etc/group",
+  "file:/etc/passwd",
+  "file:/etc/resolv.conf",
+  "file:/tmp",
+  "file:output_01_aug.csv",
+]
