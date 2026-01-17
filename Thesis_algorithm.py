@@ -119,7 +119,7 @@ def load_hour_from_mat(mat_path, sensor_col_1based=None, start_point_1based=None
     return x
 
 
-def vmd_decompose(x, K=6, alpha=1000, tau=0., DC=0, init=1, tol=1e-6, N_iter=5000):
+def vmd_decompose(x, K=6, alpha=1000, tau=0., DC=0, init=1, tol=1e-6):
     """
     Wrap vmdpy.VMD to return IMFs (K x N) and a residual power ratio.
     NOTE: vmdpy.VMD expects N_iter as the LAST positional argument.
@@ -218,10 +218,10 @@ def main():
         print(f"  Running VMD (K={num_imfs}, alpha={vmd_alpha}) ...")
         imfs_j, rj = vmd_decompose(x_j, K=num_imfs, alpha=vmd_alpha,
                                    tau=vmd_tau, DC=vmd_dc, init=vmd_init,
-                                   tol=vmd_rel_tol, N_iter=vmd_max_iter)
+                                   tol=vmd_rel_tol)
         imfs_a, ra = vmd_decompose(x_a, K=num_imfs, alpha=vmd_alpha,
                                    tau=vmd_tau, DC=vmd_dc, init=vmd_init,
-                                   tol=vmd_rel_tol, N_iter=vmd_max_iter)
+                                   tol=vmd_rel_tol)
         print(f"  Residuals: Jan={rj:.4g}  Aug={ra:.4g}")
         resid_j_list.append(rj)
         resid_a_list.append(ra)
