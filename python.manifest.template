@@ -30,7 +30,7 @@ sgx.trusted_files = [
   "file:/usr/{{ arch_libdir }}/",
   "file:/usr/lib/",
   "file:/usr/local/lib/",
-  "file:Thesis_algorithm.py",
+  "file:Thesis_algorithm_tee.py",
   "file:{{ entrypoint }}",
 ]
 
