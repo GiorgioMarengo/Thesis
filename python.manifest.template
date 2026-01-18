@@ -47,6 +47,6 @@ sgx.allowed_files = [
   "file:/tmp",
   "file:output_01_aug.csv",
   "file:/etc/sgx_default_qcnl.conf",
-  "file:./", 
+  "file:output/", 
 
 ]
