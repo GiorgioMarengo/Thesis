@@ -181,7 +181,8 @@ def pca_remove_components(Z2D, n_remove=1):
 
 def generate_quote_bin(binding_hash):
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"quote_{timestamp}.bin"
+    filename = os.path.join("output", f"quote_{timestamp}.bin")
+
     
     path_report = "/dev/attestation/user_report_data"
     path_quote  = "/dev/attestation/quote"
@@ -329,7 +330,8 @@ def main():
 
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     
-    csv_filename = f"output_{timestamp}.csv"
+    csv_filename = os.path.join("output", f"output_{timestamp}.csv")
+
     with open(csv_filename, mode="w", newline="") as f:
         writer = csv.writer(f)
         for v in scaled_values:
