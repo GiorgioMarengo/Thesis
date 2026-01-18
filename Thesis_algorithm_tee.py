@@ -22,6 +22,7 @@ import io
 import hashlib
 import csv
 from dotenv import load_dotenv
+import datetime
 
 # Optional: if vmdpy is not installed, pip install vmdpy
 try:
@@ -49,9 +50,9 @@ remove_n_pcs   = 1
 load_dotenv("input.env")
 
 ROOT_CID = os.getenv("CID")
-hash_root_cid = hashlib.sha256(ROOT_CID.encode('utf-8')).digest()
+input_hash_bytes = hashlib.sha256(ROOT_CID.encode('utf-8')).digest()
 
-print(f"Hash del root cid {hash_root_cid}")
+print(f"Hash del root cid {input_hash_bytes}")
 
 
 # File name templates: the last number goes from 1 to 24
@@ -178,6 +179,41 @@ def pca_remove_components(Z2D, n_remove=1):
     return Zrec, pca
 
 
+def generate_quote_bin(binding_hash):
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"quote_{timestamp}.bin"
+    
+    path_report = "/dev/attestation/user_report_data"
+    path_quote  = "/dev/attestation/quote"
+    
+    
+    if not os.path.exists(path_quote):
+        print("⚠️  ERRORE: Non sono in SGX. Niente quote.")
+        return 
+
+    try:
+        # 1. BINDING: Scriviamo i dati dentro il processore
+        print("Scrivendo i dati nell'enclave...")
+        with open(path_report, "wb") as f:
+            f.write(binding_hash)
+            
+        # 2. GENERAZIONE: Leggiamo la firma
+        print("Generando la quote...")
+        with open(path_quote, "rb") as f:
+            quote_bytes = f.read()
+            
+        # 3. SALVATAGGIO: Scriviamo il file su disco
+        with open(filename, "wb") as f:
+            f.write(quote_bytes)
+            
+        print(f"✅ Quote generata con successo: {filename}")
+        
+    except Exception as e:
+        print(f"❌ Qualcosa è andato storto: {e}")
+        return
+
+
+
 # ----------------------------
 # Main
 # ----------------------------
@@ -291,7 +327,9 @@ def main():
     scale_factor = 10**14
     scaled_values = [round(v * scale_factor) for v in values]
 
-    csv_filename = "output_01_aug.csv"
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    
+    csv_filename = f"output_{timestamp}.csv"
     with open(csv_filename, mode="w", newline="") as f:
         writer = csv.writer(f)
         for v in scaled_values:
@@ -299,11 +337,16 @@ def main():
 
     with open(csv_filename, "rb") as f:
         file_bytes = f.read()
+    output_hash_bytes = hashlib.sha256(file_bytes).digest()
     file_hash = hashlib.sha256(file_bytes).hexdigest()
-
+    
+    binding_hash = input_hash_bytes + output_hash_bytes
 
     print(f"\nFile creato: {csv_filename}")
     print(f"SHA256 hash: {file_hash}")
+    generate_quote_bin(binding_hash)
+
+
 '''
    # Plot final series
     plt.figure(figsize=(12, 4))
