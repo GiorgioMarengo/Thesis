@@ -15,7 +15,7 @@ fs.mounts = [
   { path = "/app", uri = "file:." },
 ]
 
-sgx.enclave_size = "16G"
+sgx.enclave_size = "32G"
 sgx.max_threads = 64
 sgx.remote_attestation = "dcap"
 
