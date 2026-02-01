@@ -22,7 +22,7 @@ import io
 import hashlib
 import csv
 from dotenv import load_dotenv
-import datetime
+import date
 
 # Optional: if vmdpy is not installed, pip install vmdpy
 try:
@@ -48,11 +48,14 @@ vmd_init       = 1
 remove_n_pcs   = 1
 
 load_dotenv("input.env")
-
+date_string = date.today().isoformat()
 ROOT_CID = os.getenv("CID")
-input_hash_bytes = hashlib.sha256(ROOT_CID.encode('utf-8')).digest()
+input_data_proof = ROOT_CID + date_string
+input_hash  = hashlib.sha256(input_data_proof.encode('utf-8')).hexdigest()
+input_hash_bytes = hashlib.sha256(input_data_proof.encode('utf-8')).digest()
 
-print(f"Hash del root cid {input_hash_bytes}")
+print(f"Hash del root cid e data odierna {input_hash}")
+
 
 
 # File name templates: the last number goes from 1 to 24
@@ -180,7 +183,7 @@ def pca_remove_components(Z2D, n_remove=1):
 
 
 def generate_quote_bin(binding_hash):
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = date.today().strftime("%Y%m%d_%H%M%S")
     filename = os.path.join("output", f"quote_{timestamp}.bin")
 
     
@@ -328,7 +331,7 @@ def main():
     scale_factor = 10**14
     scaled_values = [round(v * scale_factor) for v in values]
 
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = date.today().strftime("%Y%m%d_%H%M%S")
     
     csv_filename = os.path.join("output", f"output_{timestamp}.csv")
 
@@ -342,10 +345,28 @@ def main():
     output_hash_bytes = hashlib.sha256(file_bytes).digest()
     file_hash = hashlib.sha256(file_bytes).hexdigest()
     
+    
     binding_hash = input_hash_bytes + output_hash_bytes
 
     print(f"\nFile creato: {csv_filename}")
     print(f"SHA256 hash: {file_hash}")
+    
+    metadata = {
+        "execution_date": date_string,           
+        "input_cid": ROOT_CID,                   
+        "input_proof_string": input_data_proof,  # La stringa "CID+DATA"
+        "input_proof_hash": input_hash,                # L'hash dell'input (hex) 
+        "output_hash": file_hash,                # L'hash del CSV (hex)
+        "binding_hash_hex": binding_hash.hex()   # La somma dei due hash (quello che va nella quote)
+    }
+
+    metadata_path = os.path.join("output", f"metadata_{date_string}.json")
+    with open(metadata_path, "w") as f:
+        json.dump(metadata, f, indent=4)
+
+
+
+    
     generate_quote_bin(binding_hash)
 
 
