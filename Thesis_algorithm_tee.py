@@ -23,6 +23,7 @@ import hashlib
 import csv
 from dotenv import load_dotenv
 from datetime import date, datetime
+import json 
 
 
 # Optional: if vmdpy is not installed, pip install vmdpy
