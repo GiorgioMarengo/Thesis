@@ -22,7 +22,8 @@ import io
 import hashlib
 import csv
 from dotenv import load_dotenv
-import date
+from datetime import date, datetime
+
 
 # Optional: if vmdpy is not installed, pip install vmdpy
 try:
