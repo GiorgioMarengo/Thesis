@@ -1,0 +1,42 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.25;
+
+contract NumberAnalyzer_thesis {
+    string public status;
+    uint256 public counter;
+    string public lastCID;
+    string public proof_execution;
+    string public input_data;
+
+    event StatusUpdated(string inputCID, string proofCID, string outputCID,  string status, uint256 count, uint256 timestamp);
+
+    function threshold(int256[] calldata values, string calldata outputCID, string calldata proofCID, string calldata inputCID) external {
+        status = "";
+        lastCID = "";
+        counter = 0;
+        uint256 count = 0;
+
+        for (uint256 i = 0; i < values.length; i++) {
+            if (values[i] >= 0) {
+                count++;
+            }
+        }
+
+        counter = count;
+        lastCID = outputCID;
+        proof_execution = proofCID;
+        input_data = inputCID;
+
+        if (count == 0) {
+            status = "false";
+        } else if (count >= 1 && count <= 3) {
+            status = "check";
+        } else {
+            status = "alert";
+        }
+
+        emit StatusUpdated(inputCID, proofCID, outputCID, status, count, block.timestamp);
+    }
+
+ }
+
