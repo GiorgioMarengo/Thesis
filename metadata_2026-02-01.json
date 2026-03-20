@@ -1,0 +1,8 @@
+{
+    "execution_date": "2026-02-01",
+    "input_cid": "bafybeige56soo3pgpzdscmi5ymd7birbordgusafxj2egnsdujiec3wpxi",
+    "input_proof_string": "bafybeige56soo3pgpzdscmi5ymd7birbordgusafxj2egnsdujiec3wpxi2026-02-01",
+    "input_proof_hash": "de16d9d0aa223823f8f82a0c266a19d52b443763f8c4611f2bb3f8cf26fc5315",
+    "output_hash": "aaa71e4ad2267817f0eddafac40262e52958faffb985fff32b0959e8ebbdee1f",
+    "binding_hash_hex": "de16d9d0aa223823f8f82a0c266a19d52b443763f8c4611f2bb3f8cf26fc5315aaa71e4ad2267817f0eddafac40262e52958faffb985fff32b0959e8ebbdee1f"
+}
